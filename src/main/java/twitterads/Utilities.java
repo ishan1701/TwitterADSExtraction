@@ -202,6 +202,8 @@ public class Utilities extends Thread{
 
             Billing billing=null;
             Engagement engagement=null;
+            Video video=null;
+            Media media=null;
 
             if(object1 instanceof Billing) {
                 billing = (Billing) object1;
@@ -210,7 +212,17 @@ public class Utilities extends Thread{
             if(object1 instanceof Engagement) {
                 engagement = (Engagement) object1;
                 System.out.println(engagement.impressions+"-----------------"+engagement.app_clicks);
+
+            }
+            if(object1 instanceof Video){
+                video=(Video) object1;
+                System.out.println(video.video_3s100pct_views);
                 Thread.sleep(1000000);
+            }
+            if(object1 instanceof Media){
+                media=(Media) object1;
+                System.out.println(media.media_engagements);
+
             }
 
 

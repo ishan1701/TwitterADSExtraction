@@ -50,22 +50,7 @@ class Engagement{
 
 }
 
-public class CampaignsStats {
-
-    public String spend;
-    public String funding_source;
-    public String impressions;
-    public String engagements;
-    public String retweets;
-    public String replies;
-    public String follows;
-    public String clicks;
-    public String likes;
-    public String url_clicks;
-    public String app_clicks;
-    public String card_engagements;
-    public String tweets_send;
-    public String qualified_impressions;
+class Video{
     public String video_views_25;
     public String video_views_75;
     public String video_views_100;
@@ -74,9 +59,39 @@ public class CampaignsStats {
     public String video_cta_clicks;
     public String video_content_starts;
     public String video_mrc_views;
+
+    Video(String video_views_25,String video_views_75,String video_views_100,String video_total_views,String video_3s100pct_views,
+        String video_cta_clicks,String video_content_starts,String video_mrc_views){
+        this.video_views_25=video_views_25;
+        this.video_views_75=video_views_75;
+        this.video_views_100=video_views_100;
+        this.video_total_views=video_total_views;
+        this.video_3s100pct_views=video_3s100pct_views;
+        this.video_cta_clicks=video_cta_clicks;
+        this.video_content_starts=video_content_starts;
+        this.video_mrc_views=video_mrc_views;
+    }
+
+}
+
+class Media{
+
     public String media_views;
     public String media_engagements;
-    public String billed_engagements;
+
+    Media(String media_views,String media_engagements){
+        this.media_engagements=media_engagements;
+        this.media_views=media_views;
+    }
+
+}
+
+public class CampaignsStats {
+
+    public String spend;
+    public String funding_source;
+
+
 
     public static Object checkMetricType(JsonElement element,String metric){
 
@@ -89,10 +104,10 @@ public class CampaignsStats {
                 stats=parseEngagementData(element);
                 break;
             case METRIC_GROUPS_MEDIA:
-                parseMediaData();
+                stats=parseMediaData(element);
                 break;
             case METRIC_GROUPS_VIDEO:
-                parseVideoData();
+                stats=parseVideoData(element);
                 break;
             default:
                 System.out.println("NOT CORRECT VALUE");
@@ -182,10 +197,62 @@ public class CampaignsStats {
 
 
     }
-    public static void parseMediaData(){
+
+
+    public static Media parseMediaData(JsonElement element){
+        long media_views=0;
+        long media_engagements=0;
+
+        JsonArray jsonArray=element.getAsJsonArray();
+        for(JsonElement element1:jsonArray){
+            JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
+            for(JsonElement element2:id_data){
+                JsonElement media_views_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("media_views");
+                JsonElement media_engagements_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("media_engagements");
+
+                media_views=media_views_object.isJsonArray()?ParseJson.JSONArraySum(media_views_object.getAsJsonArray()):0;
+                media_engagements=media_engagements_object.isJsonArray()?ParseJson.JSONArraySum(media_engagements_object.getAsJsonArray()):0;
+            }
+        }
+        return new Media(Long.toString(media_views),Long.toString(media_engagements));
 
     }
-    public static void parseVideoData(){
 
+    public static Video parseVideoData(JsonElement element){
+        long video_views_25=0;
+        long video_views_75=0;
+        long video_views_100=0;
+        long video_total_views=0;
+        long video_3s100pct_views=0;
+        long video_cta_clicks=0;
+        long video_content_starts=0;
+        long video_mrc_views=0;
+
+        JsonArray jsonArray=element.getAsJsonArray();
+        for(JsonElement element1:jsonArray){
+            JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
+            for(JsonElement element2:id_data){
+                JsonElement video_views_25_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_views_25");
+                JsonElement video_views_75_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_views_75");
+                JsonElement video_views_100_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_views_100");
+                JsonElement video_total_views_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_total_views");
+                JsonElement video_3s100pct_views_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_3s100pct_views");
+                JsonElement video_cta_clicks_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_cta_clicks");
+                JsonElement video_content_starts_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_content_starts");
+                JsonElement video_mrc_views_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("video_mrc_views");
+
+
+                video_views_25=video_views_25_object.isJsonArray()?ParseJson.JSONArraySum(video_views_25_object.getAsJsonArray()):0;
+                video_views_75=video_views_75_object.isJsonArray()?ParseJson.JSONArraySum(video_views_75_object.getAsJsonArray()):0;
+                video_views_100=video_views_100_object.isJsonArray()?ParseJson.JSONArraySum(video_views_100_object.getAsJsonArray()):0;
+                video_total_views=video_total_views_object.isJsonArray()?ParseJson.JSONArraySum(video_total_views_object.getAsJsonArray()):0;
+                video_3s100pct_views=video_3s100pct_views_object.isJsonArray()?ParseJson.JSONArraySum(video_3s100pct_views_object.getAsJsonArray()):0;
+                video_cta_clicks=video_cta_clicks_object.isJsonArray()?ParseJson.JSONArraySum(video_cta_clicks_object.getAsJsonArray()):0;
+                video_content_starts=video_content_starts_object.isJsonArray()?ParseJson.JSONArraySum(video_content_starts_object.getAsJsonArray()):0;
+                video_mrc_views=video_mrc_views_object.isJsonArray()?ParseJson.JSONArraySum(video_mrc_views_object.getAsJsonArray()):0;
+
+            }
+        }
+        return new Video(Long.toString(video_views_25),Long.toString(video_views_75),Long.toString(video_views_100),Long.toString(video_total_views),Long.toString(video_3s100pct_views),Long.toString(video_cta_clicks),Long.toString(video_content_starts),Long.toString(video_mrc_views));
     }
 }
