@@ -28,4 +28,6 @@ public class Constants {
     public static final String METRIC_GROUPS_VIDEO="VIDEO";
     public static final String METRIC_GROUPS_BILLING="BILLING";
 
+    public static final String FUNDING_URI="/funding_instruments";
+
 }

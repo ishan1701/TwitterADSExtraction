@@ -29,6 +29,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import static twitterads.Constants.*;
 import static twitterads.udf.ParseCampaignsJSON.*;
+import static twitterads.Funding.fetchFundData;
 //https://ads-api.twitter.com/accounts
 //working https://ads-api.twitter.com/7/accounts
 public class Utilities extends Thread{
@@ -135,11 +136,29 @@ public class Utilities extends Thread{
     }
     public static void fetchCampaignStats(String metricGroup,Campaigns campaignObject) throws URISyntaxException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException {
 
+        //FETCH CAMPAIGN FUNDING INSTRUMENT DATA
+        Funding funding=fetchFundData(campaignObject);
+        System.out.println("funding data is"+funding.spend+"----"+funding.fundingSource);
+
+
+     /*   Fetch STATS data related to Campaigns
+        1.BILLING;
+        2.ENGAGEMENTS;
+        3.MEDIA;
+        4.VIDEO
+        */
+
         List<String> metrics = new ArrayList<>();
         metrics.add(METRIC_GROUPS_BILLING);
         metrics.add(METRIC_GROUPS_ENGAGEMENT);
         metrics.add(METRIC_GROUPS_MEDIA);
         metrics.add(METRIC_GROUPS_VIDEO);
+
+        Billing billing=null;
+        Engagement engagement=null;
+        Video video=null;
+        Media media=null;
+
         for (String metric : metrics) {
         /*
         Step 1: create new Oauth consumer.
@@ -167,8 +186,8 @@ public class Utilities extends Thread{
             parameters.add(new BasicNameValuePair("entity_ids", campaignObject.campaignId));
             parameters.add(new BasicNameValuePair("start_time", campaignObject.startDate));
             parameters.add(new BasicNameValuePair("end_time", campaignObject.endDate));
-            parameters.add(new BasicNameValuePair("granularity", "DAY"));
-            parameters.add(new BasicNameValuePair("placement", "ALL_ON_TWITTER"));
+            parameters.add(new BasicNameValuePair("granularity",GRANULARITY));
+            parameters.add(new BasicNameValuePair("placement",PLACEMENT));
             parameters.add(new BasicNameValuePair("metric_groups", metric));
 
             statsURL.setParameters(parameters);
@@ -200,10 +219,7 @@ public class Utilities extends Thread{
 
             Object object1= campaignStat.get(metric);
 
-            Billing billing=null;
-            Engagement engagement=null;
-            Video video=null;
-            Media media=null;
+
 
             if(object1 instanceof Billing) {
                 billing = (Billing) object1;
@@ -214,15 +230,16 @@ public class Utilities extends Thread{
                 System.out.println(engagement.impressions+"-----------------"+engagement.app_clicks);
 
             }
-            if(object1 instanceof Video){
-                video=(Video) object1;
-                System.out.println(video.video_3s100pct_views);
-                Thread.sleep(1000000);
-            }
+
             if(object1 instanceof Media){
                 media=(Media) object1;
                 System.out.println(media.media_engagements);
 
+            }
+            if(object1 instanceof Video){
+                video=(Video) object1;
+                System.out.println(video.video_3s100pct_views);
+                Thread.sleep(1000000);
             }
 
 

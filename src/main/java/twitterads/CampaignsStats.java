@@ -15,12 +15,16 @@ import static twitterads.Constants.*;
 class Billing{
 
     public String billed_engagements;
-    Billing(String billed_engagements){
+    public String billed_charge_local_micro;
+
+    Billing(String billed_engagements,String billed_charge_local_micro){
         this.billed_engagements=billed_engagements;
+        this.billed_charge_local_micro=billed_charge_local_micro;
     }
 }
 
 class Engagement{
+
     public String impressions;
     public String engagements;
     public String retweets;
@@ -33,6 +37,7 @@ class Engagement{
     public String card_engagements;
     public String tweets_send;
     public String qualified_impressions;
+
     Engagement(String impressions,String engagements,String retweets,String replies,String follows,String clicks,String likes,String url_clicks,String app_clicks,String card_engagements,String tweets_send,String qualified_impressions){
         this.impressions=impressions;
         this.engagements=engagements;
@@ -51,6 +56,7 @@ class Engagement{
 }
 
 class Video{
+
     public String video_views_25;
     public String video_views_75;
     public String video_views_100;
@@ -119,6 +125,7 @@ public class CampaignsStats {
 
     public static Billing parseBillingData(JsonElement element){
         long billed_engagements=0;
+        long billed_charge_local_micro=0;
         List<String> billingDataList=new ArrayList<>();
 
         JsonArray jsonArray=element.getAsJsonArray();
@@ -126,12 +133,14 @@ public class CampaignsStats {
             JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
             for(JsonElement element2:id_data){
                 JsonElement billed_engagements_object=element2.getAsJsonObject().get("metrics").getAsJsonObject().get("billed_engagements");
+                JsonElement billed_charge_local_micro_object=element2.getAsJsonObject().getAsJsonObject("metrics").getAsJsonObject().get("billed_charge_local_micro");
               /*  if(billed_engagements_object.isJsonArray())
                     billed_engagements=ParseJson.JSONArraySum(billed_engagements_object.getAsJsonArray());
                 else {
                     billed_engagements=0;
                 }*/
                 billed_engagements=billed_engagements_object.isJsonArray()?ParseJson.JSONArraySum(billed_engagements_object.getAsJsonArray()):0;
+                billed_charge_local_micro=billed_charge_local_micro_object.isJsonArray()?ParseJson.JSONArraySum(billed_charge_local_micro_object.getAsJsonArray()):0;
 
 
             }
@@ -139,7 +148,7 @@ public class CampaignsStats {
         //billingDataList.add(Long.toString(billed_engagements));
         //return billingDataList;
         System.out.println("the valus f billed data is"+billed_engagements);
-        return new Billing(Long.toString(billed_engagements));
+        return new Billing(Long.toString(billed_engagements),Long.toString(billed_charge_local_micro));
     }
 
 
