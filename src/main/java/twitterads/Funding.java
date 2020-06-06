@@ -58,9 +58,7 @@ public class Funding {
 
         response=client.execute(request);
 
-        System.out.println();
 
-        System.out.println(response.getStatusLine().getStatusCode());
 
         HttpEntity entity=response.getEntity();
         Reader reader=new InputStreamReader(entity.getContent());

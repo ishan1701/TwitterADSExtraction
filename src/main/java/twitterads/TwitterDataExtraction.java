@@ -32,7 +32,7 @@ public class TwitterDataExtraction {
 
        //Creating API URL
        URIBuilder accountPath=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI);
-      //  System.out.println(accountPath.toString());
+        System.out.println(accountPath.toString());
        //Creating
        HttpClient client=HttpClientBuilder.create().build();
        List<Account> accountList=Utilities.fetchTwitterAccount(consumer,client,accountPath.toString(),CONSUMER_KEY);

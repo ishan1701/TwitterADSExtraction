@@ -1,5 +1,9 @@
 package twitterads;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -26,6 +30,7 @@ import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import twitterads.udf.ExtractCampignsStats;
 
 import static twitterads.Constants.*;
 import static twitterads.udf.ParseCampaignsJSON.*;
@@ -36,7 +41,7 @@ public class Utilities extends Thread{
 
     public static List<Account> fetchTwitterAccount(CommonsHttpOAuthConsumer consumer, HttpClient client,String twitterAccountURI,String consumerkey){
         List<Account> accountList=new ArrayList<Account>();
-        System.out.println(twitterAccountURI);
+        //System.out.println(twitterAccountURI);
         HttpGet request=new HttpGet(twitterAccountURI);
         try {
             consumer.sign(request);
@@ -81,7 +86,7 @@ public class Utilities extends Thread{
     public static void fetchAccountCampaigns(CommonsHttpOAuthConsumer consumer,HttpClient client,URIBuilder campaignsURI,Account acc) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException, URISyntaxException {
         String next_token="NO_VALUE";
         while(next_token!=null) {
-            System.out.println(client + "-->" + campaignsURI);
+            //System.out.println(client + "-->" + campaignsURI);
             client = HttpClientBuilder.create().build();
             HttpGet request = null;
             HttpResponse response = null;
@@ -91,13 +96,13 @@ public class Utilities extends Thread{
                 request=new HttpGet(campaignsURI.setParameter("cursor", next_token).toString());
             consumer.sign(request);
 
-            System.out.println("the response is" + response);
+            //System.out.println("the response is" + response);
             response = client.execute(request);
-            System.out.println("ran sucessfully");
+           // System.out.println("ran sucessfully");
             System.out.println(response.getStatusLine().getStatusCode());
-            System.out.println("________________________________________________");
+            //System.out.println("________________________________________________");
 
-            System.out.println("the respose code is " + response.getStatusLine().getStatusCode());
+            //System.out.println("the respose code is " + response.getStatusLine().getStatusCode());
             while (response.getStatusLine().getStatusCode() == 429) {
                 System.out.println("GOT 429 Error");
                 System.out.println("the value is" + response.getStatusLine().getStatusCode());
@@ -122,8 +127,8 @@ public class Utilities extends Thread{
             parseCampaign(data,acc);
 
             JsonElement incommingToken=responseJson.get("next_cursor");
-            System.out.println("---------------------------->"+incommingToken);
-            System.out.println(incommingToken.getClass().getSimpleName()+"--->"+incommingToken.getClass().getCanonicalName()+"-->"+incommingToken.getClass().getName());
+           // System.out.println("---------------------------->"+incommingToken);
+            //System.out.println(incommingToken.getClass().getSimpleName()+"--->"+incommingToken.getClass().getCanonicalName()+"-->"+incommingToken.getClass().getName());
             if(incommingToken.getClass().getSimpleName().equals("JsonNull"))
                 next_token=null;
             else
@@ -134,11 +139,13 @@ public class Utilities extends Thread{
 
 
     }
-    public static void fetchCampaignStats(String metricGroup,Campaigns campaignObject) throws URISyntaxException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException {
+    public static void fetchCampaignStats(Campaigns campaignObject) throws URISyntaxException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException {
 
         //FETCH CAMPAIGN FUNDING INSTRUMENT DATA
         Funding funding=fetchFundData(campaignObject);
-        System.out.println("funding data is"+funding.spend+"----"+funding.fundingSource);
+        //System.out.println("funding data is"+funding.spend+"----"+funding.fundingSource);
+
+
 
 
      /*   Fetch STATS data related to Campaigns
@@ -154,10 +161,7 @@ public class Utilities extends Thread{
         metrics.add(METRIC_GROUPS_MEDIA);
         metrics.add(METRIC_GROUPS_VIDEO);
 
-        Billing billing=null;
-        Engagement engagement=null;
-        Video video=null;
-        Media media=null;
+        Map<String, String> campaignStat = new HashMap<>();
 
         for (String metric : metrics) {
         /*
@@ -177,21 +181,18 @@ public class Utilities extends Thread{
             CommonsHttpOAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
             consumer.setTokenWithSecret(ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
 
-            //Creating API URL
-            //URIBuilder campaignPath=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI+"/"+acc.id+CAMPAIGN_URI);
-            //&entity=CAMPAIGN&entity_ids=d1k94&start_time=2020-02-11&end_time=2020-02-18&granularity=DAY&placement=ALL_ON_TWITTER&metric_groups=MEDIA
             URIBuilder statsURL = new URIBuilder(BASE_URL).setPath(VERSION + STATS + ACCOUNT_URI + "/" + campaignObject.account.id);
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
             parameters.add(new BasicNameValuePair("entity", "CAMPAIGN"));
             parameters.add(new BasicNameValuePair("entity_ids", campaignObject.campaignId));
             parameters.add(new BasicNameValuePair("start_time", campaignObject.startDate));
             parameters.add(new BasicNameValuePair("end_time", campaignObject.endDate));
-            parameters.add(new BasicNameValuePair("granularity",GRANULARITY));
-            parameters.add(new BasicNameValuePair("placement",PLACEMENT));
+            parameters.add(new BasicNameValuePair("granularity", GRANULARITY));
+            parameters.add(new BasicNameValuePair("placement", PLACEMENT));
             parameters.add(new BasicNameValuePair("metric_groups", metric));
 
             statsURL.setParameters(parameters);
-            System.out.println("Executing the METRIC part--->" + campaignObject.campaignId + "----->" + statsURL.toString());
+           // System.out.println("Executing the METRIC part--->" + campaignObject.campaignId + "----->" + statsURL.toString());
             HttpClient client = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(statsURL.toString());
             HttpResponse response = null;
@@ -200,56 +201,62 @@ public class Utilities extends Thread{
             response = client.execute(request);
 
 
-            while(response.getStatusLine().getStatusCode()==429){
+            while (response.getStatusLine().getStatusCode() == 429) {
                 System.out.println("GOT 429 Error");
                 System.out.println("the value is" + response.getStatusLine().getStatusCode());
                 Thread.sleep(SLEEP_TIME);
                 response = client.execute(request);
             }
-            HttpEntity entity=response.getEntity();
-            Reader jsonResponse=new InputStreamReader(entity.getContent());
+            HttpEntity entity = response.getEntity();
+            Reader jsonResponse = new InputStreamReader(entity.getContent());
 
-            JsonObject jsonObject=new Gson().fromJson(jsonResponse,JsonObject.class);
-            JsonElement jsonElement=jsonObject.get("data");
-            List<String> statsList=new ArrayList<>();
-            Map<String,Object> campaignStat=new HashMap<>();
+            JsonObject jsonObject = new Gson().fromJson(jsonResponse, JsonObject.class);
+            JsonElement jsonElement = jsonObject.get("data");
 
-            Object object= CampaignsStats.checkMetricType(jsonElement,metric);
-            campaignStat.put(metric,object);
-
-            Object object1= campaignStat.get(metric);
-
-
-
-            if(object1 instanceof Billing) {
-                billing = (Billing) object1;
-                System.out.println(billing.billed_engagements);
-            }
-            if(object1 instanceof Engagement) {
-                engagement = (Engagement) object1;
-                System.out.println(engagement.impressions+"-----------------"+engagement.app_clicks);
-
-            }
-
-            if(object1 instanceof Media){
-                media=(Media) object1;
-                System.out.println(media.media_engagements);
-
-            }
-            if(object1 instanceof Video){
-                video=(Video) object1;
-                System.out.println(video.video_3s100pct_views);
-                Thread.sleep(1000000);
-            }
+            campaignStat.put("accountid",campaignObject.account.id);
+            campaignStat.put("accountname",campaignObject.account.accountName);
+            campaignStat.put("consumerkey",campaignObject.account.consumerKey);
+            campaignStat.put("campaignid",campaignObject.campaignId);
+            campaignStat.put("campaignname",campaignObject.campaignName);
+            campaignStat.put("startdate",campaignObject.startDate);
+            campaignStat.put("enddate",campaignObject.endDate);
+            campaignStat.put("daily_budget_amount_local_micro",campaignObject.daily_budget_amount_local_micro);
+            campaignStat.put("total_budget_amount_local_micro",campaignObject.total_budget_amount_local_micro);
+            campaignStat.put("currency",campaignObject.currency);
+            campaignStat.put("funding_source",funding.fundingSource);
+            campaignStat.put("spend",funding.spend);
 
 
+            Map<String, String> statMap=null;
+            statMap = ExtractCampignsStats.checkMetricType(jsonElement, metric);
+            //System.out.println(statMap.values());
 
-
-
-
+            campaignStat.putAll(statMap);
 
 
         }
+
+        /*  STEP 1: Create ObjectMapper
+        STEP 2: Intialize  OnjectNode and later assign object using ObjectMapper
+        STEP 3: Create ArrayNode using ObjectMapper object
+*/
+        ObjectMapper mapper=new ObjectMapper();
+        ObjectNode node=null;
+        ArrayNode arrayNode=mapper.createArrayNode();
+
+        node= mapper.createObjectNode();
+
+        String [] stats=FINAL_COLUMNS.split("\\|");
+        for(String dataStat:stats){
+            //System.out.println(campaignStat.get(dataStat));
+            node.put(dataStat,campaignStat.get(dataStat));
+
+        }
+        arrayNode.add(node);
+        String line=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+        System.out.println(line);
+
+
     }
 
 }

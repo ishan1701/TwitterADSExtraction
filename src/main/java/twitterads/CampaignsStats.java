@@ -147,7 +147,7 @@ public class CampaignsStats {
         }
         //billingDataList.add(Long.toString(billed_engagements));
         //return billingDataList;
-        System.out.println("the valus f billed data is"+billed_engagements);
+        //System.out.println("the valus f billed data is"+billed_engagements);
         return new Billing(Long.toString(billed_engagements),Long.toString(billed_charge_local_micro));
     }
 
@@ -200,7 +200,6 @@ public class CampaignsStats {
 
             }
         }
-        System.out.println("The impressions is "+impressions);
 
        return new Engagement(Long.toString(impressions),Long.toString(engagements),Long.toString(retweets),Long.toString(replies),Long.toString(follows),Long.toString(clicks),Long.toString(likes),Long.toString(url_clicks),Long.toString(app_clicks),Long.toString(card_engagements),Long.toString(tweets_send),Long.toString(qualified_impressions));
 

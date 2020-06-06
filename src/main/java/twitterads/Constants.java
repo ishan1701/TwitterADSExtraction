@@ -7,7 +7,6 @@ public class Constants {
     }
 
 
-
     public static final long SLEEP_TIME=900000;
 
     public static final String BASE_URL="https://ads-api.twitter.com";
@@ -29,5 +28,12 @@ public class Constants {
     public static final String METRIC_GROUPS_BILLING="BILLING";
 
     public static final String FUNDING_URI="/funding_instruments";
+
+    public static final String FINAL_COLUMNS="accountid|accountname|consumerkey|campaignid|campaignname|startdate|enddate|daily_budget_amount_local_micro|total_budget_amount_local_micro|currency|funding_source|spend|impressions|engagements|billed_engagements|retweets|replies|follows|clicks|media_engagements|likes|url_clicks|app_clicks|card_engagements|tweets_send|qualified_impressions|video_views_25|video_views_75|video_views_100|video_total_views|video_3s100pct_views|video_cta_clicks|video_content_starts|video_mrc_views|media_views|billed_charge_local_micro";
+
+    public static final String VIDEO_STATS="video_views_25|video_views_75|video_views_100|video_total_views|video_3s100pct_views|video_cta_clicks|video_content_starts|video_mrc_views";
+    public static final String BILLING_STATS="billed_engagements|billed_charge_local_micro";
+    public static final String ENGAGEMENT_STATS="impressions|engagements|retweets|replies|follows|clicks|likes|url_clicks|app_clicks|card_engagements|tweets_send|qualified_impressions";
+    public static final String MEDIA_STATS="media_engagements|media_views";
 
 }
