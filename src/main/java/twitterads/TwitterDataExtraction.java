@@ -9,6 +9,8 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -34,11 +36,16 @@ public class TwitterDataExtraction {
        URIBuilder accountPath=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI);
         System.out.println(accountPath.toString());
        //Creating
-       HttpClient client=HttpClientBuilder.create().build();
+       //HttpClient client=HttpClientBuilder.create().build();
+        HttpClient client = HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build()).build();
        List<Account> accountList=Utilities.fetchTwitterAccount(consumer,client,accountPath.toString(),CONSUMER_KEY);
        for(Account acc:accountList){
           // System.out.println(acc.id+"--->"+acc.accountName+"--->"+acc.consumerKey);
-           client=HttpClientBuilder.create().build();
+           client=HttpClientBuilder.create()
+                   .setDefaultRequestConfig(RequestConfig.custom()
+                           .setCookieSpec(CookieSpecs.STANDARD).build()).build();
           URIBuilder campaignPath=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI+"/"+acc.id+CAMPAIGN_URI);
            fetchAccountCampaigns(consumer,client,campaignPath,acc);
 

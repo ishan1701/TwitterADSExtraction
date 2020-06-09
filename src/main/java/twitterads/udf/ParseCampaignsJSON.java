@@ -46,7 +46,7 @@ public class ParseCampaignsJSON {
 */
             List<Campaigns> campaignsList=generateCampaignsExtractionDate(campaignId,name,startDate,endDate,total_budget_amount_local_micro,daily_budget_amount_local_micro,funding_instrument_id,currency,account);
             for(Campaigns campaign:campaignsList){
-               // System.out.println(campaign.campaignId+"=="+campaign.startDate+"---"+campaign.endDate);
+               System.out.println(campaign.campaignId+"=="+campaign.startDate+"---"+campaign.endDate);
                 // Call the stats APIs to get the BILLING
                 Utilities.fetchCampaignStats(campaign);
             }

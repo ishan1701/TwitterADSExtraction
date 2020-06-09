@@ -10,6 +10,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -50,7 +52,11 @@ public class Funding {
         consumer.setTokenWithSecret(ACCESS_TOKEN,ACCESS_TOKEN_SECRET);
         URIBuilder fundingURI=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI+"/"+campaign.account.id+FUNDING_URI+"/"+campaign.funding_instrument_id);
         System.out.println(fundingURI.toString());
-        HttpClient client=HttpClientBuilder.create().build();
+        //HttpClient client=HttpClientBuilder.create().build();
+        HttpClient client = HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build()).build();
+
         HttpGet request=new HttpGet(fundingURI.toString());
         HttpResponse response=null;
 

@@ -1,6 +1,6 @@
 package twitterads;
 
-
+import java.time.LocalDate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -15,13 +15,13 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +87,7 @@ public class Utilities extends Thread{
         String next_token="NO_VALUE";
         while(next_token!=null) {
             //System.out.println(client + "-->" + campaignsURI);
-            client = HttpClientBuilder.create().build();
+            client = HttpClientBuilder.create().setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build()).build();
             HttpGet request = null;
             HttpResponse response = null;
             if(next_token.equals("NO_VALUE"))
@@ -193,8 +193,13 @@ public class Utilities extends Thread{
 
             statsURL.setParameters(parameters);
            // System.out.println("Executing the METRIC part--->" + campaignObject.campaignId + "----->" + statsURL.toString());
-            HttpClient client = HttpClientBuilder.create().build();
+           // HttpClient client = HttpClientBuilder.create().build();
+            HttpClient client = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(RequestConfig.custom()
+                            .setCookieSpec(CookieSpecs.STANDARD).build()).build();
+
             HttpGet request = new HttpGet(statsURL.toString());
+
             HttpResponse response = null;
             consumer.sign(request);
 
@@ -225,6 +230,7 @@ public class Utilities extends Thread{
             campaignStat.put("currency",campaignObject.currency);
             campaignStat.put("funding_source",funding.fundingSource);
             campaignStat.put("spend",funding.spend);
+            campaignStat.put("cdate",LocalDate.now().toString());
 
 
             Map<String, String> statMap=null;
@@ -254,7 +260,19 @@ public class Utilities extends Thread{
         }
         arrayNode.add(node);
         String line=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+       // String line=mapper.writeValueAsString(arrayNode);
         System.out.println(line);
+        Thread.sleep(1000);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt", true));
+
+        writer.append(line);
+        writer.append("\n");
+        Thread.sleep(1000);
+        writer.close();
+
+
+
 
 
     }

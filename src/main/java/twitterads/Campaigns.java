@@ -29,17 +29,20 @@ public class Campaigns {
     public static List<Campaigns> generateCampaignsExtractionDate(String campaignId, String campaignName, String startDate, String endDate, String total_budget_amount_local_micro, String daily_budget_amount_local_micro, String funding_instrument_id,String currency, Account account){
         List<Campaigns> campgainsList=new ArrayList<Campaigns>();
         LocalDate start=LocalDate.parse(startDate);
-        LocalDate end=LocalDate.parse(endDate);
+        LocalDate end=LocalDate.parse(endDate).plusDays(1);
         final int NEXT_DAYS=7;
         final int DATE_DIFF=8;
 
         long dateDiff=ChronoUnit.DAYS.between(start,end);
-        if(dateDiff>DATE_DIFF)
+        //THE DATE IS 7 days
+        // LIKE START_DATE=2019-04-06 AND END_DATE=2019-04-13
+        //HERE 2019-04-13 is upto 00.00 , so the full day is not considered
+        if(dateDiff>=DATE_DIFF)
             end=start.plusDays(NEXT_DAYS);
 
         while (ChronoUnit.DAYS.between(start,LocalDate.parse(endDate))>-1){
             campgainsList.add(new Campaigns(campaignId,campaignName,start.toString(),end.toString(),total_budget_amount_local_micro,daily_budget_amount_local_micro,funding_instrument_id,currency,account));
-            //System.out.println("Adding new campaigns in the list");
+            System.out.println("Adding new campaigns in the list");
             start=start.plusDays(7);
             end=start.plusDays(7);
         }

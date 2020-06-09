@@ -45,10 +45,21 @@ public class ExtractCampignsStats {
         for(JsonElement element1:jsonArray){
             JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
             for(JsonElement element2:id_data){
+
                 for(String metric:metrics) {
-                    JsonElement jsonElement=element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
-                    long value=jsonElement.isJsonArray()?ParseJson.JSONArraySum(jsonElement.getAsJsonArray()):0;
-                    videoStats.put(metric,Long.toString(value));
+                    long value =0;
+                    try {
+                        JsonElement jsonElement = element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
+                        value= jsonElement.isJsonArray() ? ParseJson.JSONArraySum(jsonElement.getAsJsonArray()) : 0;
+
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+
+                    }
+                 //   System.out.println(value);
+                    videoStats.put(metric, Long.toString(value));
+
                 }
             }
         }
@@ -68,8 +79,14 @@ public class ExtractCampignsStats {
             for(JsonElement element2:id_data){
                 for(String metric:metrics) {
                     //System.out.println(metric);
-                    JsonElement jsonElement=element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
-                    long value=jsonElement.isJsonArray()?ParseJson.JSONArraySum(jsonElement.getAsJsonArray()):0;
+                    long value=0;
+                    try {
+                        JsonElement jsonElement = element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
+                        value = jsonElement.isJsonArray() ? ParseJson.JSONArraySum(jsonElement.getAsJsonArray()) : 0;
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                     billingStats.put(metric,Long.toString(value));
                 }
             }
@@ -88,9 +105,16 @@ public class ExtractCampignsStats {
         for(JsonElement element1:jsonArray){
             JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
             for(JsonElement element2:id_data){
+
                 for(String metric:metrics) {
-                    JsonElement jsonElement=element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
-                    long value=jsonElement.isJsonArray()?ParseJson.JSONArraySum(jsonElement.getAsJsonArray()):0;
+                    long value=0;
+                    try {
+                        JsonElement jsonElement = element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
+                        value = jsonElement.isJsonArray() ? ParseJson.JSONArraySum(jsonElement.getAsJsonArray()) : 0;
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                     engagementStats.put(metric,Long.toString(value));
                 }
             }
@@ -110,8 +134,14 @@ public class ExtractCampignsStats {
             JsonArray id_data=element1.getAsJsonObject().getAsJsonArray("id_data");
             for(JsonElement element2:id_data){
                 for(String metric:metrics) {
-                    JsonElement jsonElement=element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
-                    long value=jsonElement.isJsonArray()?ParseJson.JSONArraySum(jsonElement.getAsJsonArray()):0;
+                    long value=0;
+                    try {
+                        JsonElement jsonElement = element2.getAsJsonObject().get("metrics").getAsJsonObject().get(metric);
+                        value = jsonElement.isJsonArray() ? ParseJson.JSONArraySum(jsonElement.getAsJsonArray()) : 0;
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                     mediaStats.put(metric,Long.toString(value));
                 }
             }
