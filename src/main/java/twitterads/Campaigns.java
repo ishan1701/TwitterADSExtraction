@@ -42,7 +42,7 @@ public class Campaigns {
 
         while (ChronoUnit.DAYS.between(start,LocalDate.parse(endDate))>-1){
             campgainsList.add(new Campaigns(campaignId,campaignName,start.toString(),end.toString(),total_budget_amount_local_micro,daily_budget_amount_local_micro,funding_instrument_id,currency,account));
-            System.out.println("Adding new campaigns in the list");
+            //System.out.println("Adding new campaigns in the list");
             start=start.plusDays(7);
             end=start.plusDays(7);
         }

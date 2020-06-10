@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
@@ -83,7 +84,9 @@ public class Utilities extends Thread{
         }
         return accountList;
     }
-    public static void fetchAccountCampaigns(CommonsHttpOAuthConsumer consumer,HttpClient client,URIBuilder campaignsURI,Account acc) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException, URISyntaxException {
+    public static List<Campaigns> fetchAccountCampaigns(CommonsHttpOAuthConsumer consumer,HttpClient client,URIBuilder campaignsURI,Account acc) throws OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException, URISyntaxException {
+
+        List<Campaigns> campaignsList=new ArrayList<>();
         String next_token="NO_VALUE";
         while(next_token!=null) {
             //System.out.println(client + "-->" + campaignsURI);
@@ -124,7 +127,8 @@ public class Utilities extends Thread{
             //Parse the campaign and get the details campaign
             //like start_date, end_date, funding_instruments etc
 
-            parseCampaign(data,acc);
+            List<Campaigns>  campaignsListRecieved=parseCampaign(data,acc);
+            campaignsList.addAll(campaignsListRecieved);
 
             JsonElement incommingToken=responseJson.get("next_cursor");
            // System.out.println("---------------------------->"+incommingToken);
@@ -136,10 +140,10 @@ public class Utilities extends Thread{
 
 
         }
-
+        return campaignsList;
 
     }
-    public static void fetchCampaignStats(Campaigns campaignObject) throws URISyntaxException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException {
+    public static String fetchCampaignStats(Campaigns campaignObject) throws URISyntaxException, OAuthCommunicationException, OAuthExpectationFailedException, OAuthMessageSignerException, IOException, InterruptedException {
 
         //FETCH CAMPAIGN FUNDING INSTRUMENT DATA
         Funding funding=fetchFundData(campaignObject);
@@ -261,15 +265,7 @@ public class Utilities extends Thread{
         arrayNode.add(node);
         String line=mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
        // String line=mapper.writeValueAsString(arrayNode);
-        System.out.println(line);
-        Thread.sleep(1000);
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt", true));
-
-        writer.append(line);
-        writer.append("\n");
-        Thread.sleep(1000);
-        writer.close();
+      return line;
 
 
 
