@@ -41,14 +41,26 @@ public class TwitterDataExtraction {
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build()).build();
        List<Account> accountList=Utilities.fetchTwitterAccount(consumer,client,accountPath.toString(),CONSUMER_KEY);
+       List<Campaigns> campaignsList=new ArrayList<>();
        for(Account acc:accountList){
           // System.out.println(acc.id+"--->"+acc.accountName+"--->"+acc.consumerKey);
+           System.out.println("The acciu is "+acc.id);
            client=HttpClientBuilder.create()
                    .setDefaultRequestConfig(RequestConfig.custom()
                            .setCookieSpec(CookieSpecs.STANDARD).build()).build();
           URIBuilder campaignPath=new URIBuilder(BASE_URL).setPath(VERSION+ACCOUNT_URI+"/"+acc.id+CAMPAIGN_URI);
-           fetchAccountCampaigns(consumer,client,campaignPath,acc);
+           List<Campaigns> campaignsListRecieved=fetchAccountCampaigns(consumer,client,campaignPath,acc);
 
+           campaignsList.addAll(campaignsListRecieved);
+
+       }
+
+       for(Campaigns campaign:campaignsList){
+           System.out.println(campaign.campaignId+"=="+campaign.startDate+"--"+campaign.endDate+"--"+campaign.campaignName+"--"+campaign.account.id);
+
+          String data= Utilities.fetchCampaignStats(campaign);
+           System.out.println(data);
+           Thread.sleep(2000);
        }
 
 

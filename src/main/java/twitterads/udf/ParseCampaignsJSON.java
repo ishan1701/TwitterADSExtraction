@@ -14,6 +14,7 @@ import twitterads.udf.ParseJson.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static twitterads.Campaigns.generateCampaignsExtractionDate;
@@ -22,8 +23,10 @@ import static twitterads.Constants.*;
 
 public class ParseCampaignsJSON {
 
-    public static void parseCampaign(JsonElement element, Account account) throws InterruptedException, IOException, OAuthExpectationFailedException, OAuthCommunicationException, OAuthMessageSignerException, URISyntaxException {
+    public static List<Campaigns> parseCampaign(JsonElement element, Account account) throws InterruptedException, IOException, OAuthExpectationFailedException, OAuthCommunicationException, OAuthMessageSignerException, URISyntaxException {
         JsonArray jsonArray=element.getAsJsonArray();
+
+        List<Campaigns> campaignsList=new ArrayList<>();
         for(JsonElement element1:jsonArray){
             JsonObject campaignObject =element1.getAsJsonObject();
 
@@ -44,12 +47,14 @@ public class ParseCampaignsJSON {
             Thread.sleep(2000);
 
 */
-            List<Campaigns> campaignsList=generateCampaignsExtractionDate(campaignId,name,startDate,endDate,total_budget_amount_local_micro,daily_budget_amount_local_micro,funding_instrument_id,currency,account);
-            for(Campaigns campaign:campaignsList){
+            List<Campaigns> campaignListRecieved=generateCampaignsExtractionDate(campaignId,name,startDate,endDate,total_budget_amount_local_micro,daily_budget_amount_local_micro,funding_instrument_id,currency,account);
+            campaignsList.addAll(campaignListRecieved);
+           /* for(Campaigns campaign:campaignsList){
                System.out.println(campaign.campaignId+"=="+campaign.startDate+"---"+campaign.endDate);
                 // Call the stats APIs to get the BILLING
                 Utilities.fetchCampaignStats(campaign);
-            }
+            }*/
         }
+        return campaignsList;
     }
 }

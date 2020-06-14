@@ -18,7 +18,7 @@ public class Constants {
     public static final String ACCOUNT_URI="/accounts";
     public static final String CAMPAIGN_URI="/campaigns";
 
-    public static final String START_DATE="2020-01-01";
+    public static final String START_DATE="2019-01-01";
     public static final String END_DATE="2020-05-01";
 
     public static final String STATS="/stats";
