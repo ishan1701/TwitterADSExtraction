@@ -5,10 +5,10 @@ public class Constants {
     private Constants(){
 
     }
-    public static final String CONSUMER_KEY="T22UtnwkCK1mYYOl2Y13gejFq";
-    public static final String CONSUMER_SECRET="FT4ArrOI1R3AbRjKPlXMf8D6fzxdnLsBpCGgaqeajBqwFMiIlc";
-    public static final String ACCESS_TOKEN="1317958368-xHQsb0Ztw0mZXZ5BmeaVpnVhyFowdzAfmlOF5Do";
-    public static final String ACCESS_TOKEN_SECRET="VapIhnCIkMSwqd0ZUEgGeXENPlu0zHl0gJUkw0ADeEDfS";
+    public static final String CONSUMER_KEY="";
+    public static final String CONSUMER_SECRET="";
+    public static final String ACCESS_TOKEN="";
+    public static final String ACCESS_TOKEN_SECRET="";
 
 
     public static final long SLEEP_TIME=900000;
